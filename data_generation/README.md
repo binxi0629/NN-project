@@ -1,1 +1,3 @@
-"The data_generation repo is for downloading data.\n\nMore to come" 
+The data_generation repo if for downloading data
+
+More to come...
