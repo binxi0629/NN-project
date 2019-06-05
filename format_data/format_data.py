@@ -36,13 +36,13 @@ class BandsData:
 
     @staticmethod
     def load_data(file_dir='../data/', mp_id='mp_id'):
-
         """
-            load .json file
-        :param file_dir: dir of .json file
-        :param mp_id: mp_id
-        :return: bands:
-                branches:
+            This is used to load data from downloaded data file
+        :param file_dir: dir of .json file, default: '../data/'
+        :param mp_id: material-project id
+        :return: bands: in matrix form
+                branches: contains info of bands along which high-symmetry direction
+
         """
 
         with open('{file_dir}raw_data_{mp_id}.json'.format(file_dir=file_dir, mp_id=mp_id), 'r') as f:
