@@ -24,11 +24,12 @@ with open('output.json', 'w') as f:
     json.dump(data, f, cls=format_data.NumpyEncoder, indent=4)
 
 
-"""
 test_data02 = format_data.BandsData(mp_id=32428)  # test_sample 2
 bands02, branches02 = test_data02.load_data(file_dir='../sample_data/', mp_id=32428)
+print(bands02)
+print(branches02)
+
 formatted_bands02, new_dict02 = test_data02.format_data(bands02, branches02)
 data02 = {'bands': formatted_bands02}
 with open('output02.json', 'w') as f02:
     json.dump(data02, f02, cls=format_data.NumpyEncoder, indent=4)
-"""
