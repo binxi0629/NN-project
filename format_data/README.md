@@ -7,7 +7,7 @@
       - provide method to load data (*default dir*: [../data/](../data/))
       - probide method to format data         
 
-2. test_data_load.py: test for loading and formatting data, saved in [output.json](output.json) (you can check the new format there)
+2. load_data_test.py: test for loading and formatting data, saved in [output.json](output.json) (you can check the new format there)
 
 3. output.json: save the formatted sample data
 
