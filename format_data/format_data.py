@@ -37,7 +37,9 @@ class BandsData:
     @staticmethod
     def load_data(file_dir='../data/', mp_id='mp_id'):
         """
-            This is used to load data from downloaded data file
+            This is used to load data from downloaded data file, each .json data file contains original bands matrix,
+            and their corresponding high-symmetry direction e.g. '\\Gamma-X'
+
         :param file_dir: dir of .json file, default: '../data/'
         :param mp_id: material-project id
         :return: bands: in matrix form
@@ -55,8 +57,7 @@ class BandsData:
 
     def format_data(self, bands, branches):
         """
-            each .json data file contains original bands matrix, and their corresponding high-symmetry direction
-            e.g. '\\Gamma-X'
+
 
         :param bands:
         :param branches:
