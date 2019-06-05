@@ -25,14 +25,6 @@ class BandsData:
         # self.file_name = file_name
         self.mp_id = mp_id
         self.new_dict = self.__gen_dict
-        """
-            input: data file with .json format
-            output: return bands(type: list), bands_info(type: dict)
-                bands: a new matrix with rearranged ordering corresponding to each high-symmetry point
-                bands_info: keywords = high-symmetry points, value = vector of each band
-
-            more detail see:
-        """
 
     @staticmethod
     def load_data(file_dir='../data/', mp_id='mp_id'):
@@ -42,7 +34,7 @@ class BandsData:
 
         :param file_dir: dir of .json file, default: '../data/'
         :param mp_id: material-project id
-        :return: bands: in matrix form
+        :return: bands: bands info in matrix form
                 branches: contains info of bands along which high-symmetry direction
 
         """
@@ -57,17 +49,23 @@ class BandsData:
 
     def format_data(self, bands, branches):
         """
+            This is for formatting original data
 
+        :param bands: bands info in matrix form
+        :param branches: contains info of bands along which high-symmetry direction
+        :return: formatted_bands: formatted bands info in matrix form
+                 self.new_dict: write the split high-symmetry points, in dict form
 
-        :param bands:
-        :param branches:
-        :return:
         """
 
         order = []  # list to store high-symmetry point
         band_index = {}  # dict to store band index info corresponding to its high-symmetry point e.g. "X": 18
         formatted_bands = []
         zero_matrix = np.zeros(np.shape(bands))
+        """
+            zero_matrix is for: if one configuration does not have some high-symmetry points listed in __generic_dict
+            then fill zeros in those columns 
+        """
 
         for i in range(len(branches)):
             order.append(branches[i]["name"])
@@ -90,8 +88,7 @@ class BandsData:
             else:
                 formatted_bands.append(bands[:, hs_value])
 
-        # TBC
-        # transpose
+        # transpose of formatted_bands
         formatted_bands = np.transpose(formatted_bands)
 
         return formatted_bands, self.new_dict
