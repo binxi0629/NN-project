@@ -5,23 +5,24 @@ import numpy as np
 
 class BandsData:
 
-    # generic dict of high-symmetry points
-    __gen_dict = {
-        '\\Gamma': None,  # Center of the Brillouin zone
-        'M': None,  # Center of an edge
-        'R': None,  # Corner point
-        'X': None,  # Center of a face
-        'K': None,  # Middle of an edge joining two hexagonal faces
-        'L': None,  # Center of a hexagonal face
-        'U': None,  # Middle of an edge joining a hexagonal and a square face
-        'W': None,  # Corner point
-        'H': None,  # Corner point joining four edges
-        'N': None,  # Center of a face
-        'P': None,  # Corner point joining three edges
-        'A': None,  # Center of a hexagonal face
-    }
-
     def __init__(self, mp_id):
+
+        # generic dict of high-symmetry points
+        self.__gen_dict = {
+            '\\Gamma': None,  # Center of the Brillouin zone
+            'M': None,  # Center of an edge
+            'R': None,  # Corner point
+            'X': None,  # Center of a face
+            'K': None,  # Middle of an edge joining two hexagonal faces
+            'L': None,  # Center of a hexagonal face
+            'U': None,  # Middle of an edge joining a hexagonal and a square face
+            'W': None,  # Corner point
+            'H': None,  # Corner point joining four edges
+            'N': None,  # Center of a face
+            'P': None,  # Corner point joining three edges
+            'A': None,  # Center of a hexagonal face
+        }
+
         # self.file_name = file_name
         self.mp_id = mp_id
         self.new_dict = self.__gen_dict
@@ -57,7 +58,7 @@ class BandsData:
                  self.new_dict: write the split high-symmetry points, in dict form
 
         """
-
+        self.new_dict = self.__gen_dict
         order = []  # list to store high-symmetry point
         band_index = {}  # dict to store band index info corresponding to its high-symmetry point e.g. "X": 18
         formatted_bands = []
@@ -74,10 +75,12 @@ class BandsData:
             band_index[spilt[0]] = branches[i]['start_index']
             band_index[spilt[1]] = branches[i]['end_index']
 
+        # print('>>>>>>>>>>>>>>>>>>', band_index)
         # iterate all keys in band_index, and if exists, give value to new_dict, if not, pass
         for hs_point in band_index:
             if hs_point in self.new_dict:
                 self.new_dict[hs_point] = band_index[hs_point]
+        # print('>>>>>>>>>>>>>>>>>', BandsData.__gen_dict)
 
         # iterate all keys in new_dict, export bands (not arranged in bands dimension)
         for hs_point in self.new_dict:
