@@ -5,7 +5,7 @@ More to come...
 ## Todos
 
 - [ ] master the use of [pymatgen](https://pymatgen.org/)
-- [ ] unstand the RNN code 
+- [ ] understand the RNN code 
 - [ ] try to download data
 - [ ] save data in files with .jason extention
 - [ ] test the downloaded data
