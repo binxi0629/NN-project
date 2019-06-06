@@ -101,7 +101,7 @@ class BandsData:
         tmp = np.array(formatted_bands)
 
         fixed_bands = tmp[0:num_of_bands, :]
-        print(np.shape(fixed_bands))
+        # print(np.shape(fixed_bands))
         return fixed_bands
 
     @staticmethod
