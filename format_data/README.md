@@ -23,3 +23,4 @@
 - [x] translate to a new representation(a new matrix by referring their degeneracies)
 - [ ] format all the data, saved in ../input_data (or not saved into files, just directly use them by functions)
 - [ ] supervised learning, should labbel space group, this one can be done by using pymatgen packages by their mp_id
+- [ ] a script to load all data
