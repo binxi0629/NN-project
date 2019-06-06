@@ -16,10 +16,11 @@
 ## Todos
 
 - [x] load data (sample data in ../sample_data/)
-- [ ] format data contain two parts
+- [x] format data contain two parts
   - [x] part 1: the new formatted data should be at high-symmetry point (dimension of the rows should be all the same)
-  - [ ] part 2: the new formatted data should have the same number of bands (dimension of the columns should be all the same)
+  - [x] part 2: the new formatted data should have the same number of bands (dimension of the columns should be all the same)
 - [x] test for formatting the same data
-- [ ] translate to a new representation(a new matrix by referring their degeneracies)
+- [x] translate to a new representation(a new matrix by referring their degeneracies)
 - [ ] format all the data, saved in ../input_data (or not saved into files, just directly use them by functions)
 - [ ] supervised learning, should labbel space group, this one can be done by using pymatgen packages by their mp_id
+- [ ] a script to load all data
