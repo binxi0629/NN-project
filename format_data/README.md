@@ -21,6 +21,6 @@
   - [x] part 2: the new formatted data should have the same number of bands (dimension of the columns should be all the same)
 - [x] test for formatting the same data
 - [x] translate to a new representation(a new matrix by referring their degeneracies)
-- [ ] format all the data, saved in ../input_data (or not saved into files, just directly use them by functions)
+- [x] format all the data, saved in ../input_data
 - [ ] supervised learning, should labbel space group, this one can be done by using pymatgen packages by their mp_id
-- [ ] a script to load all data
+- [x] a script to load all data
