@@ -10,7 +10,8 @@ def get_space_group(file_id):  # function to get space group by id
 
     doc = m.get_doc("mp-{}".format(file_id))
 
-    return doc["spacegroup"]["symbol"]
+    return doc["spacegroup"]["symbol"], doc["spacegroup"]["number"]
+
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
             # step 0: initialize
             data = {}
             data["bands"] = []
-            data["sg_label"] = 0
+            data["number"] = 0
             data["spacegroup"] = None
 
             # step 1: new a format_data cls
@@ -44,7 +45,8 @@ def main():
 
             # step 6: save in a dict
             data["bands"] = fixed_bands
-            data["spacegroup"] = get_space_group(file_id)
+
+            data["spacegroup"], data["number"] = get_space_group(file_id)
 
             # need one more step to store data["sg_label"]
 
