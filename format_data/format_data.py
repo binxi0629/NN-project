@@ -97,19 +97,18 @@ class BandsData:
         return formatted_bands, self.new_dict
 
     @staticmethod
-    def fix_bands_dim(formatted_bands, num_of_bands=30):
+    def degen_translate(formatted_bands, en_tolerance=0.01):
+        """
+            This method is for represent the bands matrix into a degeneracy form
+        :param formatted_bands: one of the output from format_data() metod
+        :param en_tolerance: energy tolerance, default 0.01eV
+        :return:
+        """
         tmp = np.array(formatted_bands)
-
-        fixed_bands = tmp[0:num_of_bands, :]
-        # print(np.shape(fixed_bands))
-        return fixed_bands
-
-    @staticmethod
-    def degen_translate(fixed_bands, en_tolerance=0.01):
-        tmp = np.array(fixed_bands)
         size = np.shape(tmp)
         degen_bands = np.zeros(size)
 
+        # Need further test
         for i in range(size[1]):
             each_column = []
             count = 1
@@ -132,6 +131,21 @@ class BandsData:
                 degen_bands[:, i] = np.array(each_column)
 
         return degen_bands
+
+    @staticmethod
+    def fix_bands_dim(degen_bands, num_of_bands=30):
+        """
+            This method is for cut bands dimension to a fixed number, default 30
+        :param degen_bands: output from degen_translate() method
+        :param num_of_bands: the fixed dimension default:30 (30 is the minimum bands value of all data)
+        :return: fixed_bands: bands matrix with fixed dimension
+        """
+
+        tmp = np.array(degen_bands)
+
+        fixed_bands = tmp[0:num_of_bands, :]
+        # print(np.shape(fixed_bands))
+        return fixed_bands
 
 
 class NumpyEncoder(json.JSONEncoder):
