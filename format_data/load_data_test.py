@@ -1,26 +1,26 @@
 import format_data
 import json
 import numpy as np
+from pymatgen.ext.matproj import MPRester
 
-"""
-    This part moved to format_data.py
-    
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
-"""
-
-
+# step 1: new a format_data cls
 test_data = format_data.BandsData(mp_id=32306)  # test_sample 1
+
+# step 2: load the bands matrix by mp_id
 bands, branches = test_data.load_data(file_dir='../sample_data/', mp_id=32306)
 # print(bands)
 # print(branches)
+
+# step 3: format bands to a __gen_dict form
 formatted_bands, new_dict = test_data.format_data(bands, branches)
-fixed_bands = test_data.fix_bands_dim(formatted_bands)
-degen_bands = test_data.degen_translate(fixed_bands)
-print(degen_bands)
+
+# step 4: degeneracy representation
+degen_bands = test_data.degen_translate(formatted_bands)
+
+# step 5: cut the bands dimension
+fixed_bands = test_data.fix_bands_dim(degen_bands)
+
+print(fixed_bands)
 # print(type(degen_bands))
 # print(np.shape(input_bands))
 # print(formatted_bands)
@@ -46,3 +46,6 @@ with open('output02.json', 'w') as f02:
 print('>>>>>>>>>>>>>')
 
 
+m = MPRester("Hyxf8a7HI7RhXZI1kaFT")
+doc = m.get_doc("mp-1")
+print(doc["spacegroup"])
