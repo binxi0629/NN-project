@@ -96,6 +96,43 @@ class BandsData:
 
         return formatted_bands, self.new_dict
 
+    @staticmethod
+    def fix_bands_dim(formatted_bands, num_of_bands=30):
+        tmp = np.array(formatted_bands)
+
+        fixed_bands = tmp[0:num_of_bands, :]
+        print(np.shape(fixed_bands))
+        return fixed_bands
+
+    @staticmethod
+    def degen_translate(fixed_bands, en_tolerance=0.01):
+        tmp = np.array(fixed_bands)
+        size = np.shape(tmp)
+        degen_bands = np.zeros(size)
+
+        for i in range(size[1]):
+            each_column = []
+            count = 1
+            for j in range(size[0]-1):
+                if tmp[j][i] == 0:
+                    count = 0
+                    break
+                else:
+                    if np.absolute(tmp[j+1][i]-tmp[j][i]) <= en_tolerance:
+                        count += 1
+                    else:
+                        for k in range(count):
+                            each_column.append(count)
+                        count = 1
+            if count == 0:
+                pass
+            else:
+                for k in range(count):
+                    each_column.append(count)
+                degen_bands[:, i] = np.array(each_column)
+
+        return degen_bands
+
 
 class NumpyEncoder(json.JSONEncoder):
     """
