@@ -4,11 +4,9 @@ import format_data
 import json
 
 m = MPRester("Hyxf8a7HI7RhXZI1kaFT")
-# this name need modify
-# def load_data_by_id(file_id):
 
 
-def get_space_group(file_id): # function to get space group by id
+def get_space_group(file_id):  # function to get space group by id
 
     doc = m.get_doc("mp-{}".format(file_id))
 
