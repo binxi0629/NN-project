@@ -7,9 +7,8 @@
       - provide method to load data (*default dir*: [../data/](../data/))
       - probide method to format data         
 
-2. load_data_test.py: test for loading and formatting data, saved in [output.json](output.json) (you can check the new format there)
+2. load_data.py: load and format data, saved in [../input_data](../input_data) (you can check the data format there)
 
-3. output.json: save the formatted sample data
 
 ## More to come ...
 
@@ -22,5 +21,8 @@
 - [x] test for formatting the same data
 - [x] translate to a new representation(a new matrix by referring their degeneracies)
 - [x] format all the data, saved in ../input_data
-- [ ] supervised learning, should labbel space group, this one can be done by using pymatgen packages by their mp_id
+- [x] supervised learning, should labbel space group, this one can be done by using [MPRester](https://pymatgen.org/pymatgen.ext.matproj.html) module by their mp_id
 - [x] a script to load all data
+- [ ] according to training data result, modify some config parameters e.g. dimension of bands and HS points
+- [ ] add new tag "mp_id" in input_data_<mp_id>.json 
+- [ ] write a config file, put all parameters there
