@@ -13,7 +13,7 @@
   
 ## Todos 
 1.Input data
-- [ ] Check the weights of each space group
+- [x] Check the weights of each space group
 - [ ] Enlarge input data size
  - [ ] Add more bands
  - [ ] Add more HS points
