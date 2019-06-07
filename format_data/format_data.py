@@ -1,6 +1,8 @@
 import json
 import re
 import numpy as np
+import shutil
+import os
 
 
 class BandsData:
@@ -143,7 +145,9 @@ class BandsData:
 
         tmp = np.array(degen_bands)
 
-        fixed_bands = tmp[0:num_of_bands, :]
+        # A filter: bands dimension must larger than num_of_bands
+        if np.shape(tmp)[0] >= num_of_bands:
+            fixed_bands = tmp[0:num_of_bands, :]
         # print(np.shape(fixed_bands))
         return fixed_bands
 
