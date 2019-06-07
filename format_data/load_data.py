@@ -13,7 +13,6 @@ def get_space_group(file_id):  # function to get space group by id
     return doc["spacegroup"]["symbol"], doc["spacegroup"]["number"]
 
 
-
 def main():
     print('running..., please wait')
 
