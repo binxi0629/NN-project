@@ -24,5 +24,5 @@
 - [x] supervised learning, should labbel space group, this one can be done by using [MPRester](https://pymatgen.org/pymatgen.ext.matproj.html) module by their mp_id
 - [x] a script to load all data
 - [ ] according to training data result, modify some config parameters e.g. dimension of bands and HS points
-- [ ] add new tag "mp_id" in input_data_<mp_id>.json 
+- [x] add new tag "mp_id" in input_data_<mp_id>.json 
 - [ ] write a config file, put all parameters there
