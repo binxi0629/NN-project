@@ -14,6 +14,7 @@
 ## Todos 
 1.Input data
 - [x] Check the weights of each space group
+- [x] Graphically show bands number and its occurrences of input data set
 - [ ] Enlarge input data size
  - [ ] Add more bands
  - [ ] Add more HS points
