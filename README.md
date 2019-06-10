@@ -18,7 +18,7 @@
   |   └── diagnosis/    # diagnosis possible issuse on the input data
   |       ├── diagnosis.py    # diagonsing script
   |       └── spacegroup_weights.txt    # diagnosis result: the weights of space group
-  ├── network/    # ket folder contains fully connected Neural Network architecture
+  ├── network/    # key folder contains fully connected Neural Network architecture
       └── ...(TBC)
  ```
  For data generation: see [data_generation](data_generation/)
