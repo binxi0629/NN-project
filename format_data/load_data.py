@@ -51,11 +51,9 @@ def create_data():
                     count += 1
 
 
+"""
 def add_data():
-    """
-        Fixed the issue: https://github.com/binxi0629/NN-project/issues/4
-    :return:
-    """
+    # Fixed the issue: https://github.com/binxi0629/NN-project/issues/4
 
     with open('error_files.json', 'r') as f:
         files_id = json.load(f)
@@ -103,6 +101,8 @@ def add_data():
                 json.dump(data, f2, cls=format_data.NumpyEncoder, indent=4)
 
             print("File raw_data_{}.json saved, loading next file... ".format(i))
+
+"""
 
 
 if __name__ == "__main__":
