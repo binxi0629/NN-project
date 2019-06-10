@@ -146,8 +146,9 @@ class BandsData:
         tmp = np.array(degen_bands)
 
         # A filter: bands dimension must larger than num_of_bands
-        if np.shape(tmp)[0] >= num_of_bands:
-            fixed_bands = tmp[0:num_of_bands, :]
+        # filter will cause bug, removed, need manually create a new filter method
+        #if np.shape(tmp)[0] >= num_of_bands:
+        fixed_bands = tmp[0:num_of_bands, :]
         # print(np.shape(fixed_bands))
         return fixed_bands
 
