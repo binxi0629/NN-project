@@ -9,6 +9,9 @@
 
 2. load_data.py: load and format data, saved in [../input_data](../input_data) (you can check the data format there)
 
+3. new_data_generating.py: script to create input data without doing degeneracy translation
+
+4. stat.py: script to check whether input data are good or not
 
 ## More to come ...
 
@@ -27,4 +30,4 @@
 - [x] add new tag "mp_id" in input_data_<mp_id>.json 
 - [ ] write a config file, put all parameters there
 - [x] regenerate input_data_<mp_id>.json without doing degeneracy translation 
-- [ ] regenerate input_data_<mp_id>.json with bands around fermi level
+- [x] regenerate input_data_<mp_id>.json with bands around fermi level
