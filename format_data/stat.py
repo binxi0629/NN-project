@@ -30,7 +30,7 @@ def statistic():
 
                 stat_res[this_id]['bands']['branches'] = {}
                 stat_res[this_id]['bands']['branches'] = data_json["band"]["branches"]
-                print("finished:{this_num}/{total_num}".format(this_num=i+1, total_num =num_files))
+                print("finished:{this_num}/{total_num}".format(this_num=i+1, total_num=num_files))
 
     with open('stat_res.json', 'w') as f:
         json.dump(stat_res, f, cls=format_data.NumpyEncoder, indent=4)
@@ -85,7 +85,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 if __name__ == '__main__':
-    # statistic()
-    plt.close("all")
-    plot_bands()
+    statistic()
+    #plt.close("all")
+   # plot_bands()
 
