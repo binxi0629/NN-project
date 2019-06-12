@@ -7,7 +7,7 @@ import os
 
 class BandsData:
 
-    def __init__(self, mp_id):
+    def __init__(self, mp_id, *args):
 
         # generic dict of high-symmetry points
         self.__gen_dict = {
@@ -140,17 +140,44 @@ class BandsData:
             This method is for cut bands dimension to a fixed number, default 30
         :param degen_bands: output from degen_translate() method
         :param num_of_bands: the fixed dimension default:30 (30 is the minimum bands value of all data)
-        :return: fixed_bands: bands matrix with fixed dimension
+        :return: fixed_bands_num: bands matrix with fixed dimension
         """
 
         tmp = np.array(degen_bands)
 
         # A filter: bands dimension must larger than num_of_bands
-        # filter will cause bug, removed, need manually create a new filter method
-        #if np.shape(tmp)[0] >= num_of_bands:
         fixed_bands = tmp[0:num_of_bands, :]
         # print(np.shape(fixed_bands))
         return fixed_bands
+
+    @staticmethod
+    def fix_bands_dim_around_fermi(degen_bands, bands_below_fermi_limit=15, num_of_bands=30):
+        tmp = np.array(degen_bands)
+
+        # count bands number
+        bands_num = np.shape(tmp)[0]
+
+        # locate fermi level
+        fermi_index = 0
+        for j in range(bands_num):
+            if (tmp[j][0]) * (tmp[j + 1][0]) <= 0:
+                fermi_index = j
+                break
+            else:
+                pass
+
+        # judge if fermi_index <= bands_below_fermi_limit
+        if fermi_index <= (bands_below_fermi_limit-1):
+            bands_around_fermi = tmp[0:num_of_bands, :]
+        else:
+            start_index = fermi_index-bands_below_fermi_limit
+            end_index = start_index+num_of_bands
+            bands_around_fermi = tmp[start_index:end_index, :]
+
+        print("Bands number: {bands_num}, fermi level: {fermi_index}, formatted bands number: {f_bands_num}".format(
+            bands_num=bands_num, fermi_index=fermi_index, f_bands_num=np.shape(bands_around_fermi)[0]))
+
+        return bands_around_fermi
 
 
 class NumpyEncoder(json.JSONEncoder):
