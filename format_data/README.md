@@ -26,3 +26,5 @@
 - [ ] according to training data result, modify some config parameters e.g. dimension of bands and HS points
 - [x] add new tag "mp_id" in input_data_<mp_id>.json 
 - [ ] write a config file, put all parameters there
+- [x] regenerate input_data_<mp_id>.json without doing degeneracy translation 
+- [ ] regenerate input_data_<mp_id>.json with bands around fermi level
