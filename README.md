@@ -26,3 +26,10 @@
  For data format: see [format_data](format_data/)
  
  For NN archi: see [network](network/)
+
+## TODOS: UPDATED 17/06
+
+- [ ] Reduce the features from 230 to e.g. 100
+- [ ] Optimize the NN archi, bands number...
+- [ ] Convergence test of loss
+- [ ] Check the code, data_loader, shuffling, data format...
