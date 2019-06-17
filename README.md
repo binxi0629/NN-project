@@ -29,7 +29,7 @@
 
 ## TODOS: UPDATED 17/06
 
-- [x] Reduce the features from 230 to e.g. 100
+- [x] Reduce the classes from 230 to e.g. 100
 - [ ] Optimize the NN archi, bands number...
 - [ ] Convergence test of loss
 - [ ] Check the code, data_loader, shuffling, data format...
