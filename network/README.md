@@ -3,17 +3,17 @@ Stored [here](https://github.com/koktszfung/Summer-Intern-2019) for convenience
 
 
 ## TODOS
-- [ ] Only consider those sg occurrences larger than the following threshold value:
-    - [x] sg occurrences larger than 100 (41 classes)
-    - [x] sg occurrences larger than 90 (42 classes)
-    - [ ] sg occurrences larger than 80
-    - [ ] sg occurrences larger than 50
+- [x] Only consider those sg occurrences larger than the following threshold value:
+    - [x] sg occurrences larger than 100
+    - [x] sg occurrences larger than 90 
+    - [x] sg occurrences larger than 80
+    - [x] sg occurrences larger than 50
 - [ ] Tune the parameters:
     - [ ] # of hidden layers, # of nodes in each hidden layer
     - [ ] activation functions
     - [ ] optimizer and criterion
     - [ ] learning rate
-- [ ] Try different types of input data:
+- [x] Try different types of input data:
     - [x] bands around fermi level after degeneracy translation
     - [x] different # of bands around fermi level
          - [x] 30 bands
