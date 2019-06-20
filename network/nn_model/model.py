@@ -19,7 +19,6 @@ def get_base_model():
 
 def get_base_model_2():
     # Model_2: Added more nodes in hidden layer 360->256->128->35->40
-    # Model_1: output = SELU*W3*{lrelu*[W2*[Sigmoid*(W1*lrelu*input+C1)]+C2]}+C3
     layers = []
     layers.append(nn.LeakyReLU())
     layers.append(nn.Linear(360, 256))
