@@ -27,9 +27,9 @@
  
  For NN archi: see [network](network/)
 
-## TODOS: UPDATED 17/06
+## TODOS: UPDATED 20/06
 
 - [x] Reduce the classes from 230 to e.g. 100
-- [ ] Optimize the NN archi, bands number...
-- [ ] Convergence test of loss
-- [ ] Check the code, data_loader, shuffling, data format...
+- [x] Optimize the NN archi, bands number...
+- [x] Convergence test of loss
+- [x] Check the code, data_loader, shuffling, data format...
