@@ -22,5 +22,11 @@ Seems it does converge (very quickly) but turns out the input data are not good:
  - Maybe we have cut too much info
  - The input are complicated and cound not learn any thing new
 
-More to come ...
-
+## TODOS
+- [ ] Feed both EL and D into the network
+    - [ ] with no weights: 0.5/0.5
+    - [ ] with weights: 0.7/0.3
+    - [ ] with weights: 0.3/0.7
+- [ ] Try only Gamma point
+- [ ] Try sg occurrences > 200
+- [ ] Try mispredicted sg numbers, see the physics behind it
