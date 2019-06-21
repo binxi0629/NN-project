@@ -1,4 +1,4 @@
-## Results Show
+# Results Show
 
 | No.| # of bands | Around Fermi| # sg classes| EL or D| NN model| # of epochs | # of data | Results|
 |----|------------|-------------|-------------|--------|---------|-------------|-----------|--------|
@@ -15,7 +15,7 @@
 | 11 | 50 | yes | 27 (> 100) | D | model_2 | 10 | 7438 | 76.5% |
 | 12 | 50 | yes | 27 (> 100) | D | model_2 | 40 | 7438 | ~78% | 
 
-# Loss Vs. epochs and preidction Vs. epochs
+## Loss Vs. epochs and preidction Vs. epochs
 ( [No. 12](./hw_input_5_40epochs) )
 
 Seems it does converge (very quickly) but turns out the input data are not good:
