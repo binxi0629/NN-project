@@ -24,7 +24,7 @@ Seems it does converge (very quickly) but turns out the input data are not good:
 
 ## TODOS
 - [ ] Feed both EL and D into the network
-    - [ ] with no weights: 0.5/0.5
+    - [x] with no weights: 0.5/0.5
     - [ ] with weights: 0.7/0.3
     - [ ] with weights: 0.3/0.7
 - [ ] Try only Gamma point
