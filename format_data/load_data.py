@@ -1,31 +1,40 @@
 from pymatgen.ext.matproj import MPRester
-from pathlib import Path
+from diagnosis import diagnosis
 import format_data
-import json
-import os
+import json, os
 import numpy as np
 
-m = MPRester("HvxfB98DFTCPiadV")
+
+m = MPRester("z9urSTLgyAmN85OW")
 
 
-def get_space_group(file_id):  # function to get space group by id
+def get_space_group_from_file(mp_id):  # load file in input_data
+    try:
+        with open('../input_data/input_data_{}.json'.format(mp_id), 'r') as f:
+            doc = json.load(f)
+        return doc["spacegroup"], doc["number"]
+    except FileNotFoundError:
+        return
 
-    doc = m.get_doc("mp-{}".format(file_id))
 
-    return doc["spacegroup"]["symbol"], doc["spacegroup"]["number"]
+def create_new_data():
+    """
+        Create new data without doing degeneracy translation
+    :return: None
+    """
 
-
-def create_data():
     data = {}
-    data_dir = '../data/'
+    data_dir = '../data/'  # raw data directory
     data["number"] = 0
     data["spacegroup"] = None
     count = 1
+    error_files = {}
+    error_files["mp_id"] =[]
 
     for subdir, dirs, files in os.walk(data_dir):
         num_files = len(files)
         for i in range(num_files):
-            with open(data_dir + files[i]) as f:
+            with open(data_dir+files[i]) as f:
                 data_json = json.load(f)
 
                 mp_id = data_json["id"]
@@ -35,89 +44,47 @@ def create_data():
                 bands = np.array(bands)
                 branches = data_json["band"]["branches"]
                 formatted_bands, new_dict = this_data.format_data(bands, branches)
-                degen_bands = this_data.degen_translate(formatted_bands)
-                new_bands = this_data.fix_bands_dim(degen_bands)
-                data["bands"] = new_bands
-                try:
-                    data["spacegroup"], data["number"] = get_space_group(mp_id)
-                except:
-                    print("{} is not found".format(mp_id))
-                    continue
 
-                save_file_name = 'input_data_{}.json'.format(mp_id)
-                with open('../input_data/{}'.format(save_file_name), 'w') as file:
+                new_bands = this_data.fix_bands_dim(formatted_bands)  # <<<<<<<<<<<<<<<<
+
+                data["bands"] = new_bands
+                # data["spacegroup"], data["number"] = get_space_group_from_file(mp_id)
+
+                # save new_input_data_*.json under new_input_data_3/
+                try:
+                    with open('../input_data/input_data_{}.json'.format(mp_id), 'r') as input_file:
+                        doc = json.load(input_file)
+                    data["spacegroup"], data["number"] = doc["spacegroup"], doc["number"]
+                except FileNotFoundError:
+                    error_files["mp-id"].append(mp_id)
+                    continue
+                # input data file name: new_input_data_<mp-id>.json
+                save_file_name = 'new_input_data_{}.json'.format(mp_id)
+
+                with open('../input_data_1/{}'.format(save_file_name), 'w') as file:  # <<<<<<<
                     json.dump(data, file, cls=format_data.NumpyEncoder, indent=4)
-                    print("finished... {}/21,738".format(count))
+                    print("finished... {}/21,737".format(count))  # total input: 21,737
                     count += 1
 
-
-"""
-def add_data():
-    # Fixed the issue: https://github.com/binxi0629/NN-project/issues/4
-
-    with open('error_files.json', 'r') as f:
-        files_id = json.load(f)
-        for i in files_id["mp_id"]:
-            try:
-                get_space_group(i)
-            except:
-                print("{} is not found".format(i))
-                continue
-
-            sg, sg_number = get_space_group(i)
-
-
-            data = {}
-            data["bands"] = []
-            data["number"] = 0
-            data["spacegroup"] = None
-
-            # step 1: new a format_data cls
-            this_data = format_data.BandsData(mp_id=i)
-
-            # step 2: load the bands matrix by mp_id
-            bands, branches = this_data.load_data(mp_id=i)
-
-            # step 3: format bands to a __gen_dict form
-            formatted_bands, new_dict = this_data.format_data(bands, branches)
-
-            # step 4: degeneracy representation
-            degen_bands = this_data.degen_translate(formatted_bands)
-
-            # step 5: cut the bands dimension
-            fixed_bands = this_data.fix_bands_dim(degen_bands)
-
-            # step 6: save in a dict
-            data["bands"] = fixed_bands
-
-            data["spacegroup"], data["number"] = sg, sg_number
-
-            # need one more step to store data["sg_label"]
-
-            # save in a .json file
-            save_file_name = 'input_data_{}.json'.format(i)
-
-            with open('../input_data/{}'.format(save_file_name), 'w') as f2:
-                json.dump(data, f2, cls=format_data.NumpyEncoder, indent=4)
-
-            print("File raw_data_{}.json saved, loading next file... ".format(i))
-
-"""
+    with open('error_files.json', 'w') as ef:
+        json.dump(error_files, ef, cls=format_data.NumpyEncoder, indent=2)
 
 
 def create_new_data_around_fermi():
     """
-        Create new input data around fermi level
-    :return:
+        More useful than create_new_data()
+        Create new input data around fermi level, slightly modified from above function
+    :return: None
     """
 
     data = {}
-    data_dir = '../data/'
+    data_dir = '../data/'  # raw data directory
     data["number"] = 0
     data["spacegroup"] = None
     count = 1
     error_files = {}
     error_files["mp_id"] = []
+    low_fermi = []
 
     for subdir, dirs, files in os.walk(data_dir):
         num_files = len(files)
@@ -139,26 +106,138 @@ def create_new_data_around_fermi():
 
                 new_bands = this_data.fix_bands_dim_around_fermi(formatted_bands)  # <<<<<<<
 
-                data["bands"] = new_bands
-                # data["spacegroup"], data["number"] = get_space_group_from_file(mp_id)
-                try:
-                    with open('../input_data/input_data_{}.json'.format(mp_id), 'r') as input_file:
-                        doc = json.load(input_file)
-                    data["spacegroup"], data["number"] = doc["spacegroup"], doc["number"]
-                except FileNotFoundError:
-                    error_files["mp-id"].append(mp_id)
+                if new_bands is None:
+                    print('The fermi level is below 10 for {} band'.format(mp_id))
+                    low_fermi.append(mp_id)
                     continue
-                save_file_name = 'new_input_data_{}.json'.format(mp_id)
+                else:
+                    data["bands"] = new_bands
+                    # data["spacegroup"], data["number"] = get_space_group_from_file(mp_id)
+                    try:
+                        with open('../input_data/input_data_{}.json'.format(mp_id), 'r') as input_file:
+                            doc = json.load(input_file)
+                        data["spacegroup"], data["number"] = doc["spacegroup"], doc["number"]
+                    except FileNotFoundError:
+                        error_files["mp-id"].append(mp_id)
+                        continue
+                    save_file_name = 'new_EL_input_data_{}.json'.format(mp_id)
 
-                with open('../new_input_data_3/{}'.format(save_file_name), 'w') as file:
-                    json.dump(data, file, cls=format_data.NumpyEncoder, indent=4)
-                    print("finished... {}/21,737".format(count))
-                    count += 1
+                    with open('../input_data_3_5/{}'.format(save_file_name), 'w') as file:
+                        json.dump(data, file, cls=format_data.NumpyEncoder, indent=4)
+                        print("finished... {}/21,737".format(count))
+                        count += 1
 
     with open('error_files.json', 'w') as ef:
         json.dump(error_files, ef, cls=format_data.NumpyEncoder, indent=2)
 
+    print(low_fermi)
+
+
+def create_high_weights_new_data(data_dir, new_data_dir, weights_lower_limit=100):
+    print("Running... please wait")
+    sg_num_list, total_num = diagnosis.check_specific_spacegroup_num(data_dir=data_dir,
+                                                                     occurrence_limit=weights_lower_limit,
+                                                                     greater=True,
+                                                                     save=False, plt=False)
+    count = 0
+    for i in sg_num_list:
+        file_count = 0
+        for subdir, dirs, files in os.walk(data_dir):
+            num_files = len(files)
+            for j in range(num_files):
+                with open(data_dir + files[j]) as f:
+                    data_json = json.load(f)
+
+                    if data_json["number"] == i:
+                        this_data = {}
+                        this_data = data_json
+                        this_data["new_number"] = count
+                        with open(new_data_dir+files[j], 'w') as new_file:
+                            json.dump(this_data, new_file, cls=format_data.NumpyEncoder, indent=2)
+                        file_count +=1
+                        print("\rSaved: {}".format(file_count), end="")
+
+        count += 1
+        print("\nFinished current spacegroup number, running next one: {}/{}".format(count, total_num))
+
+    print("Done! Check in {}".format(new_data_dir))
+
+
+def create_den_data_around_fermi():
+    """
+        More useful than create_new_data()
+        Create new input data around fermi level, slightly modified from above function
+    :return: None
+    """
+
+    data = {}
+    data_dir = '../data/'  # raw data directory
+    data["number"] = 0
+    data["spacegroup"] = None
+    count = 1
+    error_files = {}
+    error_files["mp_id"] = []
+    low_fermi = []
+
+    for subdir, dirs, files in os.walk(data_dir):
+        num_files = len(files)
+        for i in range(num_files):
+            # load original data
+            with open(data_dir + files[i]) as f:
+                data_json = json.load(f)
+
+                mp_id = data_json["id"]
+                # id
+                data['id'] = mp_id
+
+                # create format_data class
+                this_data = format_data.BandsData(mp_id=mp_id)
+                bands = data_json["band"]["bands"]  # load original bands
+                bands = np.array(bands)
+                branches = data_json["band"]["branches"]  # load original branches
+                formatted_bands, new_dict = this_data.format_data(bands, branches)  # formatted bands at HS points
+
+                fermi_index = this_data.find_fermi_index(formatted_bands)  # locate fermi
+
+                translated_bands = this_data.degen_translate(formatted_bands)  # degeneracy translate
+
+                new_bands = this_data.fix_bands_dim_around_fermi(translated_bands,
+                                                                 fermi_index=fermi_index)  # <<<<<<<
+
+                if new_bands is None:
+                    print('The fermi level is below 10 for {} band'.format(mp_id))
+                    low_fermi.append(mp_id)
+                    continue
+                else:
+                    data["bands"] = new_bands
+                    # data["spacegroup"], data["number"] = get_space_group_from_file(mp_id)
+                    try:
+                        with open('../input_data/input_data_{}.json'.format(mp_id), 'r') as input_file:
+                            doc = json.load(input_file)
+                        data["spacegroup"], data["number"] = doc["spacegroup"], doc["number"]
+                    except FileNotFoundError:
+                        error_files["mp-id"].append(mp_id)
+                        continue
+                    save_file_name = 'new_input_data_{}.json'.format(mp_id)
+
+                    with open('../input_data_3/{}'.format(save_file_name), 'w') as file:  # <<<<<
+                        json.dump(data, file, cls=format_data.NumpyEncoder, indent=4)
+                        print("finished... {}/21,737".format(count))
+                        count += 1
+
+    with open('error_files.json', 'w') as ef:
+        json.dump(error_files, ef, cls=format_data.NumpyEncoder, indent=2)
+
+    print(low_fermi)
+
 
 if __name__ == "__main__":
-    # main()
-    create_data()
+    # create_new_data()
+    # create_new_data_around_fermi()
+    # create_den_data_around_fermi()
+
+    create_high_weights_new_data(data_dir="../input_data_3/",
+                                 new_data_dir="../hw_input_data_5_3/",
+                                 weights_lower_limit=200)
+
+
