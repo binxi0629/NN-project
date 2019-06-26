@@ -2,11 +2,15 @@ import torch
 import torch.nn
 import torch.nn.functional
 import numpy as np
-import matplotlib.pyplot as plt
+import json
 
-from model import get_base_model_2  # <<<<<<< change model
-from data_loader import get_train_valid_loader
-from filter_data import create_list_file
+from filter_data import create_valid_list_files
+import model_bs_sg
+import model_bs_crys
+import model_crys_sg
+import data_loader_bs_sg
+import data_loader_bs_crys
+import data_loader_crys_sg
 
 
 def train_one_epoch(device, model, optimizer, criterion, train_loader):
@@ -21,16 +25,13 @@ def train_one_epoch(device, model, optimizer, criterion, train_loader):
             data_input, data_label = batch_input[i], batch_label[i]
             data_input, data_label = data_input.to(device), data_label.to(device)
             # feed
-            output = model(data_input).view(1, 38)  # <<<<<<<<<<
-
+            output = model(data_input).view(1, -1)
             loss = criterion(output, data_label)
-
             loss.backward()
-
             optimizer.step()
             loss_epoch = loss.item()
         print("\rtrain batch:{}/{}".format(b, len(train_loader)), end="")
-    return round(loss_epoch, 6)
+    return round(loss_epoch, 4)
 
 
 def validate_one_epoch(device, model, criterion, valid_loader):
@@ -44,7 +45,8 @@ def validate_one_epoch(device, model, criterion, valid_loader):
             # read data
             data_input, data_label = batch_input[i], batch_label[i]
             data_input, data_label = data_input.to(device), data_label.to(device)
-            output = model(data_input).view(1, 38)  # <<<<<
+            output = model(data_input).view(1, -1)
+
             val_loss += criterion(output, data_label).item()
 
             if torch.max(output, 1)[1] == data_label:
@@ -53,84 +55,115 @@ def validate_one_epoch(device, model, criterion, valid_loader):
 
     val_loss /= num_valid
     num_correct /= num_valid
-    return round(val_loss, 6), round(num_correct*100, 6)
+    return round(val_loss, 4), round(num_correct*100, 4)
 
 
-def main():
-    loss_list = []
-    epoch_list = []
-    pred_res =[]
-
-    np.set_printoptions(precision=2)
-    # setup
+def main_bs_sg():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    # net = Net()
-    model = get_base_model_2()  # <<<<<<< change model
-    model_path = ""  # "model_save/06102327_ce_softmax_all.pt"
-    state_dict_path = ""  # "state_dict_save/06102327_ce_softmax_all.pt"
 
-    if model_path != "":
-        torch.load(model_path)
-        model.eval()
-    if state_dict_path != "":
-        model.load_state_dict(torch.load(state_dict_path))
-        model.eval()
-    net = model.to(device)
+    model = model_bs_sg.get_base_model()
+    model = model.to(device)
 
-    # optimizer = torch.optim.Adam(net.parameters(), lr=0.00526)
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.0005)
-    # optimizer = torch.optim.SGD(net.parameters(), lr=0.00756)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
     criterion = torch.nn.CrossEntropyLoss()
 
-    create_list_file("../../hw_input_data_1/", 30)  # <<<<<<<<<<<<<
-    train_loader, valid_loader = get_train_valid_loader("../../valid_name_list.txt", 32, 0.1)
+    create_valid_list_files("data/hw_input_data_2/", 30)  # <<<<<<
+    train_loader, valid_loader = data_loader_bs_sg.get_train_valid_loader("data/valid_list.txt", 32, 0.1)
 
-    result = validate_one_epoch(device, net, criterion, valid_loader)
+    result = validate_one_epoch(device, model, criterion, valid_loader)
     print("\rvalid loss:{} accuracy:{}%".format(*result))
 
-    for epoch in range(40):
-        result = train_one_epoch(device, net, optimizer, criterion, train_loader)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.75)
+    for epoch in range(10):
+        result = train_one_epoch(device, model, optimizer, criterion, train_loader)
         print("\rtrain epoch:{} loss:{}".format(epoch, result))
+        result = validate_one_epoch(device, model, criterion, valid_loader)
+        print("\rvalid loss:{} accuracy:{}%".format(*result))
+        scheduler.step(epoch)
 
-        # plot loss Vs. epoch
-        loss_list.append(result)
-        epoch_list.append(epoch)
 
-        val_result = validate_one_epoch(device, net, criterion, valid_loader)
-        pred_res.append(val_result[1])
-        print("\rvalid loss:{} accuracy:{}%".format(*val_result))
-    # result = validate_one_epoch(device, net, criterion, valid_loader)
-    # print("\rvalid loss:{} accuracy:{}%".format(*result))
-    """
-    filter noise in loss
-    loss_filter = []
-    epoch_filter = []
-    filter_num = 0
-    for i in range(20):
-        loss_filter.append(loss_list[filter_num])
-        epoch_filter.append(epoch_list[filter_num])
-        filter_num += 10
-    """
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.plot(epoch_list, loss_list)
-    plt.xlabel("epoch")
-    plt.ylabel("loss")
-    plt.ylim(0, 6)
-    plt.title("loss Vs. epoch")
+def create_crystal_list_files(device, model, list_path):
+    file_name_arr = np.loadtxt(list_path, "U50")
+    for i in range(7):
+        open("data/crystal_{}_list.txt".format(i), "w").close()
+    for i in range(file_name_arr.shape[0]):
+        file_name = file_name_arr[i]
+        with open(file_name, "r") as file:
+            data_json = json.load(file)
+        data_input_np = np.array(data_json["bands"])
+        data_input_np = data_input_np.flatten().T
+        data_input = torch.from_numpy(data_input_np).float()
+        output = model(data_input.to(device))
+        guess_crystal = torch.max(output, 0)[1].item()
+        with open("data/crystal_{}_list.txt".format(guess_crystal), "a") as file:
+            file.write(file_name + "\n")
+        print("\rcreate crystal file: {}/{}".format(i, file_name_arr.shape[0]), end="")
 
-    plt.subplot(2, 1, 2)
-    plt.plot(epoch_list, pred_res)
-    plt.xlabel("epoch")
-    plt.ylabel("prediction result (%)")
-    plt.title("prediction Vs. epoch")
-    plt.ylim(50, 100)
-    plt. show()
+
+def main_bs_crys():
+    # train 230->7 classes
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    model = model_bs_crys.get_base_model()
+    model = model.to(device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+    criterion = torch.nn.CrossEntropyLoss()
+
+    create_valid_list_files("data/hw_input_data_2/", 30)  # <<<<<<<<
+    train_loader, valid_loader = data_loader_bs_crys.get_train_valid_loader("data/valid_list.txt", 32, 0.1)
+
+    result = validate_one_epoch(device, model, criterion, valid_loader)
+    print("\rvalid loss:{} accuracy:{}%".format(*result))
+
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.75)
+    for epoch in range(10):
+        result = train_one_epoch(device, model, optimizer, criterion, train_loader)
+        print("\rtrain epoch:{} loss:{}".format(epoch, result))
+        result = validate_one_epoch(device, model, criterion, valid_loader)
+        print("\rvalid loss:{} accuracy:{}%".format(*result))
+        scheduler.step(epoch)
+
+    create_crystal_list_files(device, model, "data/valid_list.txt")
+
+
+def main_crys_sg(crysnum: int):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    margins = [2, 15, 74, 142, 167, 194, 230]
+    model = model_crys_sg.get_base_model(
+        360, 100, 100, margins[crysnum] - margins[crysnum - 1] + 1 if crysnum > 0 else 3
+    )
+    model = model.to(device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+    criterion = torch.nn.CrossEntropyLoss()
+
+    train_loader, valid_loader = data_loader_crys_sg.get_train_valid_loader(
+        "data/", crysnum, 32, 0.1
+    )
+
+    result = validate_one_epoch(device, model, criterion, valid_loader)
+    print("\rvalid crystal:{} loss:{} accuracy:{}%".format(crysnum, *result))
+
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.75)
+    for epoch in range(8):
+        result = train_one_epoch(device, model, optimizer, criterion, train_loader)
+        print("\rtrain crystal:{} epoch:{} loss:{}".format(crysnum, epoch, result))
+        result = validate_one_epoch(device, model, criterion, valid_loader)
+        print("\rvalid crystal:{} loss:{} accuracy:{}%".format(crysnum, *result))
+        scheduler.step(epoch)
 
 
 if __name__ == "__main__":
-    main()
+    # main_bs_sg()
+    main_bs_crys()
+    for i in range(7):
+        main_crys_sg(i)
+
     torch.cuda.empty_cache()
     import winsound
     duration = 500  # milliseconds
