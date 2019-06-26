@@ -1,2 +1,1 @@
-# Summer-Intern-2019
-Use this to place extra stuff
+# Original model placed [here](https://github.com/koktszfung/BStoSG) for convinence
