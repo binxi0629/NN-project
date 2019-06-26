@@ -1,5 +1,7 @@
 import json
 import numpy
+import seaborn as sn
+import pandas as pd
 import matplotlib.pyplot as plt
 
 # DONE
@@ -53,22 +55,24 @@ def correct_in_guess(plot=False):
         json.dump(error_dict, sum_f, indent=2)
 
     if plot is True:
+        numpy.set_printoptions(suppress=True)
+        confusion_matrix = numpy.zeros([7, 7])
         plt.figure()
         for i in range(7):
             stat = error_dict["crystal_{}".format(i)]
-            x = [1, 2, 3, 4, 5, 6, 7]
-            y = numpy.zeros(7)
             for j in range(len(stat)):
                 index = stat[j][1]
-                y[index] +=1
+                confusion_matrix[i][index] += 1
 
-            # plt.subplot(4, 2, i+1)
-            plt.bar(x, y)
-            plt.xlabel("No. crystal system")
-            plt.ylabel("Occurrence")
-            plt.title("Crystal system {}".format(i+1))
-            plt.show()
+        # Added corrects
+        for i in range(7):
+            confusion_matrix[i][i] = corrects[i]
 
+        df_cm = pd.DataFrame(confusion_matrix, index=[i for i in "1234567"],
+                             columns=[i for i in "1234567"])
+        plt.figure(figsize=(10, 7))
+        sn.heatmap(df_cm, annot=True, cmap="YlGnBu", fmt='g')
+        plt.show()
     return corrects
 
 
