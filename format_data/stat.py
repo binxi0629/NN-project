@@ -86,6 +86,6 @@ class NumpyEncoder(json.JSONEncoder):
 
 if __name__ == '__main__':
     statistic()
-    #plt.close("all")
-   # plot_bands()
+    # plt.close("all")
+    # plot_bands()
 

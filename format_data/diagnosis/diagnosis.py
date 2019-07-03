@@ -1,24 +1,57 @@
 import json
 import os
 import numpy as np
+from utils import plot_tool
 
 
-def check_spacegroup_weight(num_data=1):
-    data_dir = '../../input_data/'
-    store = {}
+def count_spacegroup_weights(data_dir='../../input_data_2/', plt=False):
+
     # initialize sg_weight
-    sg_weight = np.zeros([230, 2])
+    sg_weights = np.zeros([230, 2])
     for i in range(230):
-        sg_weight[i][0] = i+1
+        sg_weights[i][0] = i+1
 
     for subdir, dirs, files in os.walk(data_dir):
-        for i in range(num_data):
+        num_files = len(files)
+        for i in range(num_files):
             with open(data_dir+files[i]) as f:
                 data_json = json.load(f)
                 sg_number = np.array(data_json["number"])
-                sg_weight[sg_number-1][1] += 1
+                sg_weights[sg_number-1][1] += 1
+    sg_weights = np.int_(sg_weights)
 
-    print(sg_weight)
+    # print(sg_weights)
+
+    if plt:
+        plot_tool.plot(x_data=sg_weights[:, 0],
+                       y_data=sg_weights[:, 1],
+                       x_label="spacegroup number",
+                       y_label="occurrence",
+                       title="Occurrence for spacegroup number",
+                       bar=True)
+
+    return sg_weights
+
+
+def check_specific_spacegroup_num(data_dir, occurrence_limit=50, greater=False, save=False, plt=False):
+    # initialize sg_weight
+    sg_weights = count_spacegroup_weights(data_dir, plt=plt)
+    count = 0
+    res = []
+    for i in range(230):
+        if greater:
+            if sg_weights[i, 1] >= occurrence_limit:
+                count += 1
+                res.append(sg_weights[i, 0])
+        else:
+            if sg_weights[i, 1] < occurrence_limit:
+                count += 1
+                res.append(sg_weights[i, 0])
+    if save:
+        with open('sg_working_list.json', 'w') as f:
+            json.dump(res, f, cls=NumpyEncoder, indent=2)
+
+    return res, count
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -33,4 +66,14 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 if __name__ == '__main__':
-    check_spacegroup_weight(9771)
+    """count_result, count = check_specific_spacegroup_num(data_dir='../../new_input_data_5/',
+                                                        occurrence_limit=100,
+                                                        greater=True,
+                                                        save=False, plt=True)
+    """
+    sg_weight = count_spacegroup_weights(plt=True)
+    data = {}
+
+    data["sg_weights"] = sg_weight
+    with open("sg_weights.json", 'w') as f:
+        json.dump(data, f, cls=NumpyEncoder, indent=2)

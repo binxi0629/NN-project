@@ -102,7 +102,7 @@ class BandsData:
     def degen_translate(formatted_bands, en_tolerance=0.01):
         """
             This method is for represent the bands matrix into a degeneracy form
-        :param formatted_bands: one of the output from format_data() metod
+        :param formatted_bands: one of the output from format_data() method
         :param en_tolerance: energy tolerance, default 0.01eV
         :return:
         """
@@ -151,20 +151,22 @@ class BandsData:
         return fixed_bands
 
     @staticmethod
-    def fix_bands_dim_around_fermi(degen_bands, bands_below_fermi_limit=15, num_of_bands=30):
-        tmp = np.array(degen_bands)
-
+    def find_fermi_index(formatted_bands):
+        tmp = np.array(formatted_bands)
         # count bands number
         bands_num = np.shape(tmp)[0]
 
-        # locate fermi level
-        fermi_index = 0
         for j in range(bands_num):
             if (tmp[j][0]) * (tmp[j + 1][0]) <= 0:
                 fermi_index = j
-                break
-            else:
-                pass
+                # print(j)
+                return fermi_index
+
+        print('Error: fermi_index not found')
+
+    @staticmethod
+    def fix_bands_dim_around_fermi(degen_bands, bands_below_fermi_limit=15, num_of_bands=30, fermi_index=0):
+        tmp = np.array(degen_bands)
 
         # judge if fermi_index <= bands_below_fermi_limit
         if fermi_index <= (bands_below_fermi_limit-1):
@@ -173,9 +175,6 @@ class BandsData:
             start_index = fermi_index-bands_below_fermi_limit
             end_index = start_index+num_of_bands
             bands_around_fermi = tmp[start_index:end_index, :]
-
-        print("Bands number: {bands_num}, fermi level: {fermi_index}, formatted bands number: {f_bands_num}".format(
-            bands_num=bands_num, fermi_index=fermi_index, f_bands_num=np.shape(bands_around_fermi)[0]))
 
         return bands_around_fermi
 
