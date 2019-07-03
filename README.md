@@ -35,9 +35,11 @@
  
  For NN archi: see [network](network/)
 
-## TODOS: UPDATED 20/06
+## TODOS: UPDATED 03/07
 
 - [x] Reduce the classes from 230 to e.g. 100
 - [x] Optimize the NN archi, bands number...
 - [x] Convergence test of loss
 - [x] Check the code, data_loader, shuffling, data format...
+- [x] Code refactoring
+- [ ] Add bands padding function and do testing
