@@ -99,7 +99,7 @@ class BandsData:
         return formatted_bands, self.new_dict
 
     @staticmethod
-    def degen_translate(formatted_bands, en_tolerance=0.01):
+    def degen_translate(formatted_bands, en_tolerance=0.01, padding=False):
         """
             This method is for represent the bands matrix into a degeneracy form
         :param formatted_bands: one of the output from format_data() method
@@ -135,7 +135,7 @@ class BandsData:
         return degen_bands
 
     @staticmethod
-    def fix_bands_dim(degen_bands, num_of_bands=30):
+    def fix_bands_dim_b2t(degen_bands, num_of_bands=30):
         """
             This method is for cut bands dimension to a fixed number, default 30
         :param degen_bands: output from degen_translate() method
@@ -164,19 +164,123 @@ class BandsData:
 
         print('Error: fermi_index not found')
 
+    def vb_count(self, formatted_bands):
+        fermi_index = BandsData.find_fermi_index(formatted_bands)
+        return fermi_index + 1
+
+    def cb_count(self, formatted_bands):
+        fermi_index = BandsData.find_fermi_index(formatted_bands)
+        tmp = np.array(formatted_bands)
+        bands_num = np.shape(tmp)[0]
+        return bands_num-fermi_index-1
+
+    def padding_judgement(self,
+                          conduction_num,
+                          valence_num,
+                          bands_below_fermi_limit):
+
+        if valence_num < bands_below_fermi_limit:
+            padding_btm = True
+        else:
+            padding_btm = False
+
+        if conduction_num < bands_below_fermi_limit:
+            padding_top = True
+        else:
+            padding_top = False
+
+        return padding_btm, padding_top
+
     @staticmethod
     def fix_bands_dim_around_fermi(degen_bands, bands_below_fermi_limit=15, num_of_bands=30, fermi_index=0):
         tmp = np.array(degen_bands)
 
         # judge if fermi_index <= bands_below_fermi_limit
         if fermi_index <= (bands_below_fermi_limit-1):
-            bands_around_fermi = tmp[0:num_of_bands, :]
+            # bands_around_fermi = tmp[0:num_of_bands, :]
+            return None
         else:
             start_index = fermi_index-bands_below_fermi_limit
             end_index = start_index+num_of_bands
             bands_around_fermi = tmp[start_index:end_index, :]
 
-        return bands_around_fermi
+            return bands_around_fermi
+
+    def padding_b2t(self, formatted_bands, padding_num=9999, num_of_bands=100):
+        # bands padding from bottom to the top
+        tmp = np.array(formatted_bands)
+        bands_num = np.shape(tmp)[0]
+        row_dim = len(self.__gen_dict)
+
+        padding_vector = []
+        [padding_vector.append(padding_num) for num in range(row_dim)]
+
+        if bands_num > num_of_bands:
+            padded_bands = self.__class__.fix_bands_dim_b2t(formatted_bands, num_of_bands=num_of_bands)
+            print('larger: {}'.format(len(padded_bands)))
+        else:
+            count = num_of_bands-bands_num
+            for i in range(count):
+                tmp = np.append(tmp, [padding_vector], axis=0)
+            padded_bands = tmp
+            print('padded: {}'.format(len(padded_bands)))
+
+        return padded_bands
+
+    def padding_around_fermi(self,
+                             formatted_bands,
+                             num_of_bands,
+                             fermi_index,
+                             bands_below_fermi_limit,
+                             padding_num=9999):
+
+        # bands padding around fermi level
+        tmp = np.array(formatted_bands)
+        bands_num = np.shape(tmp)[0]
+        row_dim = len(self.__gen_dict)
+
+        padding_vector = []
+        [padding_vector.append(padding_num) for num in range(row_dim)]
+
+        conduction_bands_num = self.cb_count(formatted_bands)
+        print(conduction_bands_num)
+        valence_bands_num = self.vb_count(formatted_bands)
+        print(valence_bands_num)
+        padding_btm, padding_top = self.padding_judgement(conduction_bands_num,
+                                                          valence_bands_num,
+                                                          bands_below_fermi_limit=bands_below_fermi_limit)
+
+        valence_bands = tmp[0:fermi_index+1, :]
+        if not padding_btm:
+            btm_bands = valence_bands
+        else:
+            padded_btm_bands = []
+            btm_num = bands_below_fermi_limit-valence_bands_num
+            [padded_btm_bands.append(padding_vector) for num in range(btm_num)]
+            padded_btm_bands = np.array(padded_btm_bands)
+            btm_bands = np.concatenate((padded_btm_bands, valence_bands), axis=0)
+            print('btm_bands_num', len(btm_bands))
+            print('padded_bands_num', len(padded_btm_bands))
+            print('vb_num', len(valence_bands))
+
+        conduction_bands = tmp[fermi_index+1:, :]
+        if not padding_top:
+            top_bands = conduction_bands
+        else:
+            padded_top_bands = []
+            top_num = bands_below_fermi_limit-conduction_bands_num
+            [padded_top_bands.append(padding_vector) for num in range(top_num)]
+            padded_top_bands = np.array(padded_top_bands)
+            top_bands = np.concatenate((conduction_bands, padded_top_bands), axis=0)
+            print('top_bands_num', len(top_bands))
+            print('padded_bands_num', len(padded_top_bands))
+            print('cb_num', len(conduction_bands))
+
+        padded_bands = np.concatenate((btm_bands, top_bands), axis=0)
+
+        print(len(padded_bands))
+
+        return padded_bands
 
 
 class NumpyEncoder(json.JSONEncoder):
