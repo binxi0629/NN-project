@@ -21,6 +21,9 @@ def create_new_data(data_dir='../data/',
                     degeneracy=False,
                     en_tolerance=0.01,
                     around_fermi=False,
+                    padding_b2t=False,
+                    padding_around_fermi=False,
+                    padding_num=9999,
                     num_of_bands=30,
                     bands_below_fermi_limit=15,
                     save_dir="../input_data_3/"):
@@ -67,30 +70,63 @@ def create_new_data(data_dir='../data/',
                 # step 2: arrange data at hs points
                 formatted_bands, new_dict = this_data.format_data(bands, branches)
 
-                # step 3: do degeneracy translation
+                # step 3: do bands padding
+                if padding_b2t & padding_around_fermi:
+                    print('>>>Note: \'padding_b2t\' and \'padding_around_fermi\' can not both be \'True\'')
+                    print('>>> Default: do \'padding_b2t\' (padding from bottom to the top)')
+                    padding_around_fermi = False
+
+                if padding_b2t:
+                    padded_bands = this_data.padding_b2t(formatted_bands,
+                                                         padding_num=padding_num,
+                                                         num_of_bands=num_of_bands)
+                    padding = True
+                elif padding_around_fermi:
+                    fermi_index = this_data.find_fermi_index(formatted_bands)
+                    padded_bands = this_data.padding_around_fermi(formatted_bands,
+                                                                  fermi_index=fermi_index,
+                                                                  bands_below_fermi_limit=bands_below_fermi_limit,
+                                                                  padding_num=padding_num,
+                                                                  num_of_bands=num_of_bands)
+                    padding = True
+                else:
+                    padding = False
+
+                # step 4: do degeneracy translation
                 if degeneracy:
                     translated_bands = this_data.degen_translate(formatted_bands,
-                                                                 en_tolerance=en_tolerance)  # degeneracy translate
+                                                                 en_tolerance=en_tolerance,
+                                                                 padding=padding)  # degeneracy translation
                 else:
-                    translated_bands = formatted_bands
+                    if not padding:
+                        translated_bands = formatted_bands
+                    else:
+                        translated_bands = padded_bands
 
-                # step 4: fix dimension of bands
+                # step 5: fix dimension of bands
                 if around_fermi:
-                    fermi_index = this_data.find_fermi_index(formatted_bands)  # locate fermi
-                    new_bands = this_data.fix_bands_dim_around_fermi(translated_bands,
-                                                                     num_of_bands=num_of_bands,
-                                                                     fermi_index=fermi_index,
-                                                                     bands_below_fermi_limit=bands_below_fermi_limit)
+                    if not padding:
+                        fermi_index = this_data.find_fermi_index(formatted_bands)  # locate fermi
+                        new_bands = this_data.fix_bands_dim_around_fermi(translated_bands,
+                                                                         num_of_bands=num_of_bands,
+                                                                         fermi_index=fermi_index,
+                                                                         bands_below_fermi_limit=bands_below_fermi_limit
+                                                                         )
+                    else:
+                        new_bands = padded_bands
                 else:
-                    new_bands = this_data.fix_bands_dim(translated_bands)  # from bottom  to top
+                    if not padding:
+                        new_bands = this_data.fix_bands_dim_b2t(translated_bands)  # from bottom  to top
+                    else:
+                        new_bands = padded_bands
 
-                # step 5: save bands into files
+                # step 6: save bands into files
                 # Bands None exception
 
                 if new_bands is None:
-                    print('The fermi level is below {} for {} band'.format(bands_below_fermi_limit, mp_id))
+                    # print('\nThe fermi level is below {} for {} band'.format(bands_below_fermi_limit, mp_id))
                     low_fermi.append(mp_id)
-                    print('Continue...')
+                    # print('Continue...')
                     continue
                 else:
                     data["bands"] = new_bands
@@ -109,7 +145,7 @@ def create_new_data(data_dir='../data/',
                     with open(save_dir+save_file_name, 'w') as file:
                         json.dump(data, file, cls=format_data.NumpyEncoder, indent=4)
 
-                        print("\rfinished... {}/{}".format(count, num_files), end='')
+                        print("\rFinished... {}/{}".format(count, num_files), end='')
                         count += 1
 
     print('\nThese are low fermi cases:\n {}'.format(low_fermi))
@@ -151,14 +187,14 @@ def create_high_weights_new_data(data_dir, new_data_dir, weights_lower_limit=100
 
 
 if __name__ == "__main__":
-    create_new_data(
-        data_dir='../data/',
-        degeneracy=True,
-        en_tolerance=0.01,
-        around_fermi=True,
-        num_of_bands=40,
-        bands_below_fermi_limit=20,
-        save_dir="../input_data_test/")
+    create_new_data(data_dir='../data_test/',
+                    degeneracy=False,
+                    en_tolerance=0.01,
+                    padding_around_fermi=True,
+                    around_fermi=False,
+                    num_of_bands=100,
+                    bands_below_fermi_limit=50,
+                    save_dir="../input_data_test01/")
 
     # create_high_weights_new_data(data_dir="../input_data_3/",
     #                              new_data_dir="../hw_input_data_5_3/",
