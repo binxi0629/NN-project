@@ -168,12 +168,12 @@ def create_new_data(data_dir='../data/',
     print('Done, please check in {}'.format(save_dir))
 
 
-def create_high_weights_new_data(data_dir, new_data_dir, weights_lower_limit=100):
+def create_high_weights_new_data(data_dir, new_data_dir, lowest_weights_limit=100, greater=True, save=False, plt=True):
     print("Running... please wait")
     sg_num_list, total_num = diagnosis.check_specific_spacegroup_num(data_dir=data_dir,
-                                                                     occurrence_limit=weights_lower_limit,
-                                                                     greater=True,
-                                                                     save=False, plt=False)
+                                                                     occurrence_limit=lowest_weights_limit,
+                                                                     greater=greater,
+                                                                     save=save, plt=plt)
     count = 0
     for i in sg_num_list:
         file_count = 0
@@ -199,18 +199,24 @@ def create_high_weights_new_data(data_dir, new_data_dir, weights_lower_limit=100
 
 
 if __name__ == "__main__":
-    create_new_data(data_dir='../data_test/',
-                    degeneracy=True,
-                    en_tolerance=0.01,
-                    padding_around_fermi=True,
-                    around_fermi=False,
-                    b2t=False,
-                    num_of_bands=100,
-                    bands_below_fermi_limit=50,
-                    save_dir="../input_data_test01/")
+    from config import args
+    if args['create_data']['start']:
+        cfg = args['create_data']
+        create_new_data(data_dir=cfg['data_dir'],
+                        degeneracy=cfg['degeneracy'],
+                        en_tolerance=cfg['en_tolerance'],
+                        padding_around_fermi=cfg['padding_around_fermi'],
+                        padding_b2t=cfg['padding_b2t'],
+                        around_fermi=cfg['around_fermi'],
+                        b2t=cfg['b2t'],
+                        num_of_bands=cfg['num_of_bands'],
+                        bands_below_fermi_limit=cfg['bands_below_fermi_limit'],
+                        save_dir=cfg['save_dir'])
 
-    # create_high_weights_new_data(data_dir="../input_data_3/",
-    #                              new_data_dir="../hw_input_data_5_3/",
-    #                              weights_lower_limit=200)
+    if args['create_hw_data']['start']:
+        cfg2 = args['create_hw_data']
+        create_high_weights_new_data(data_dir=cfg2['data_dir'],
+                                     new_data_dir=cfg2['new_data_dir'],
+                                     lowest_weights_limit=cfg2['lowest_weights_limit'])
 
 
