@@ -248,38 +248,38 @@ class BandsData:
         [padding_vector.append(padding_num) for num in range(row_dim)]
 
         conduction_bands_num = self.cb_count(formatted_bands, fermi_index=fermi_index)
-        print(conduction_bands_num)
+        # print(conduction_bands_num)
         valence_bands_num = self.vb_count(formatted_bands, fermi_index=fermi_index)
-        print(valence_bands_num)
+        # print(valence_bands_num)
         padding_btm, padding_top = self.padding_judgement(conduction_bands_num,
                                                           valence_bands_num,
                                                           bands_below_fermi_limit=bands_below_fermi_limit)
 
         valence_bands = tmp[0:fermi_index+1, :]
         if not padding_btm:
-            btm_bands = valence_bands
+            btm_bands = tmp[fermi_index - bands_below_fermi_limit:fermi_index, :]
         else:
             padded_btm_bands = []
             btm_num = bands_below_fermi_limit-valence_bands_num
             [padded_btm_bands.append(padding_vector) for num in range(btm_num)]
             padded_btm_bands = np.array(padded_btm_bands)
             btm_bands = np.concatenate((padded_btm_bands, valence_bands), axis=0)
-            print('btm_bands_num', len(btm_bands))
-            print('padded_bands_num', len(padded_btm_bands))
-            print('vb_num', len(valence_bands))
+            # print('btm_bands_num', len(btm_bands))
+            # print('padded_bands_num', len(padded_btm_bands))
+            # print('vb_num', len(valence_bands))
 
         conduction_bands = tmp[fermi_index+1:, :]
         if not padding_top:
-            top_bands = conduction_bands
+            top_bands = tmp[fermi_index+1:fermi_index+bands_below_fermi_limit+1, :]
         else:
             padded_top_bands = []
             top_num = bands_below_fermi_limit-conduction_bands_num
             [padded_top_bands.append(padding_vector) for num in range(top_num)]
             padded_top_bands = np.array(padded_top_bands)
             top_bands = np.concatenate((conduction_bands, padded_top_bands), axis=0)
-            print('top_bands_num', len(top_bands))
-            print('padded_bands_num', len(padded_top_bands))
-            print('cb_num', len(conduction_bands))
+            # print('top_bands_num', len(top_bands))
+            # print('padded_bands_num', len(padded_top_bands))
+            # print('cb_num', len(conduction_bands))
 
         padded_bands = np.concatenate((btm_bands, top_bands), axis=0)
 
