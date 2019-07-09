@@ -33,9 +33,28 @@
     - `data_dir` : load raw data from here
     - if `degeneracy` is `True`: degenerate (D) bands
     - `en_tolerance`: energy tolerance, recommanded `0.001`
-    - `around`
+    - if `around_fermi` is `True`: energy level (EL) bands around the fermi level
+    - if `b2t` is `True`: energy level (EL) bands from bottom to the top
+    - if `padding_b2t` is `True`: padded bands from bottom to the top
+    - if `padding_around_fermi` is `True`: padded bands around fermi level
+    - `num_of_bands`: number of bands
+    - `bands_below_fermi_limit`: bands number below fermi level, if symmetric, it should be half of `num_of_bands`
+    - `save_dir`: floder that you will save your new data here
  
-  
+ Note: `b2t`, `around_fermi` can not both be `True`
+       `padding_b2t`, `padding_around_fermi` can not both be `True`
+       `padding_b2t`(or `padding_around_fermi`), `b2t`(or `around_fermi` ) can not both be `True`
+ 
+ priority: `padding_b2t` > `padding_around_fermi` > `around_fermi` > `b2t`
+ 
+ -  `args['create_hw_data']`
+    - if  `start`  is `True`, will create high weight data
+    - `data_dir` : load FORMATTED data (e.g. `../input_data_*`) from here
+    - `new_data_dir`: floder that you will save your new data here   
+    - `lowest_weights_limit`: lowest occurrence 
+    - if `greater` is `True`: greater than `lowest_weights_limit`
+    - if `save` is `True`: will save in new file (more to come)
+    - if `plt` is `True`: will plot sg occurence Vs. sg number
 
 ## More to come ...
 
