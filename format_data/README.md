@@ -28,11 +28,12 @@
         └── utils/*
  ```
  2. Tune parameters
- -  ` args['create_data'] ` 
-    - if  ` 'start' `  is ` True `, will create data
-    -  ` 'data_dir' ` : load raw data from here
-    - if ` 'degeneracy' ` is ` True `: degenerate (D) bands
-    -  ` 'en_tolerance' `: energy tolerance, recommanded ` 0.001 `
+ -  `args['create_data']` 
+    - if  `start`  is `True`, will create data
+    - `data_dir` : load raw data from here
+    - if `degeneracy` is `True`: degenerate (D) bands
+    - `en_tolerance`: energy tolerance, recommanded `0.001`
+    - `around`
  
   
 
