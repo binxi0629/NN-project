@@ -13,6 +13,29 @@
 
 4. stat.py: script to check whether input data are good or not
 
+## Usage guideline(NOT finished)
+  All parameters are written in [config.py](config.py)
+ 
+ 1. Required folders:
+ ``` 
+    ├── data/
+    ├── input_data/
+    ├── new_input_data_*/  # you will save data here  
+    └── format_data/
+        ├── format_data.py
+        ├── load_data.py
+        ├── config.py
+        └── utils/*
+ ```
+ 2. Tune parameters
+ -  ` args['create_data'] ` 
+    - if  ` 'start' `  is ` True `, will create data
+    -  ` 'data_dir' ` : load raw data from here
+    - if ` 'degeneracy' ` is ` True `: degenerate (D) bands
+    -  ` 'en_tolerance' `: energy tolerance, recommanded ` 0.001 `
+ 
+  
+
 ## More to come ...
 
 ## Todos
