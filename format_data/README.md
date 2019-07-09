@@ -9,7 +9,7 @@
 
 2. load_data.py: load and format data, saved in [../input_data](../input_data) (you can check the data format there)
 
-3.config.py: conifguration file which contains basic parameters
+3. config.py: conifguration file which contains basic parameters
 
 4. stat.py: script to check whether input data are good or not
 
