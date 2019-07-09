@@ -34,7 +34,7 @@
  
  For NN archi: see [network](network/)
 
-## TODOS: UPDATED 03/07
+## TODOS: UPDATED 09/07
 
 - [x] Reduce the classes from 230 to e.g. 100
 - [x] Optimize the NN archi, bands number...
