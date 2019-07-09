@@ -87,7 +87,7 @@ class BandsData:
         # iterate all keys in new_dict, export bands (not arranged in bands dimension)
         for hs_point in self.new_dict:
             hs_value = self.new_dict[hs_point]
-            if self.new_dict[hs_point] == None:
+            if self.new_dict[hs_point] is None:
                 # fill zeros in bands
                 formatted_bands.append(zero_matrix[:, 0])
             else:
@@ -125,6 +125,7 @@ class BandsData:
                         for k in range(count):
                             each_column.append(count)
                         count = 1
+
             if count == 0:
                 pass
             else:
@@ -164,12 +165,10 @@ class BandsData:
 
         print('Error: fermi_index not found')
 
-    def vb_count(self, formatted_bands):
-        fermi_index = BandsData.find_fermi_index(formatted_bands)
+    def vb_count(self, formatted_bands, fermi_index=0):
         return fermi_index + 1
 
-    def cb_count(self, formatted_bands):
-        fermi_index = BandsData.find_fermi_index(formatted_bands)
+    def cb_count(self, formatted_bands, fermi_index=0):
         tmp = np.array(formatted_bands)
         bands_num = np.shape(tmp)[0]
         return bands_num-fermi_index-1
@@ -206,7 +205,12 @@ class BandsData:
 
             return bands_around_fermi
 
-    def padding_b2t(self, formatted_bands, padding_num=9999, num_of_bands=100):
+    def padding_b2t(self,
+                    formatted_bands,
+                    # padding_num=9999,
+                    num_of_bands=100):
+
+        padding_num = 0  # <<< all padding number should be zero
         # bands padding from bottom to the top
         tmp = np.array(formatted_bands)
         bands_num = np.shape(tmp)[0]
@@ -230,9 +234,10 @@ class BandsData:
     def padding_around_fermi(self,
                              formatted_bands,
                              num_of_bands,
-                             fermi_index,
                              bands_below_fermi_limit,
-                             padding_num=9999):
+                             # padding_num=9999,
+                             fermi_index=0):
+        padding_num = 0  # <<< all padding number should be zero
 
         # bands padding around fermi level
         tmp = np.array(formatted_bands)
@@ -242,9 +247,9 @@ class BandsData:
         padding_vector = []
         [padding_vector.append(padding_num) for num in range(row_dim)]
 
-        conduction_bands_num = self.cb_count(formatted_bands)
+        conduction_bands_num = self.cb_count(formatted_bands, fermi_index=fermi_index)
         print(conduction_bands_num)
-        valence_bands_num = self.vb_count(formatted_bands)
+        valence_bands_num = self.vb_count(formatted_bands, fermi_index=fermi_index)
         print(valence_bands_num)
         padding_btm, padding_top = self.padding_judgement(conduction_bands_num,
                                                           valence_bands_num,
