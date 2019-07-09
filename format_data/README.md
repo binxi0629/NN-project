@@ -41,8 +41,8 @@
     - `bands_below_fermi_limit`: bands number below fermi level, if symmetric, it should be half of `num_of_bands`
     - `save_dir`: floder that you will save your new data here
  
- Note: `b2t`, `around_fermi` can not both be `True`
-       `padding_b2t`, `padding_around_fermi` can not both be `True`
+ Note: `b2t`, `around_fermi` can not both be `True`,
+       `padding_b2t`, `padding_around_fermi` can not both be `True`,
        `padding_b2t`(or `padding_around_fermi`), `b2t`(or `around_fermi` ) can not both be `True`
  
  priority: `padding_b2t` > `padding_around_fermi` > `around_fermi` > `b2t`
