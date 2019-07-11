@@ -108,7 +108,9 @@ class BandsData:
         """
         tmp = np.array(formatted_bands)
         size = np.shape(tmp)
-        degen_bands = np.zeros(size)
+
+        # degen_bands = np.zeros(size)  # assumption 1: missing data are assumed null, labeled by 0
+        degen_bands = np.zeros(size) + 1  # assumption 2: missing data are assumed non-degenerate, labeled by 1
 
         # Need further test
         for i in range(size[1]):
