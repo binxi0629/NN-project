@@ -34,7 +34,7 @@
  
  For NN archi: see [network](network/)
 
-## TODOS: UPDATED 09/07
+## TODOS: UPDATED 15/07
 
 - [x] Reduce the classes from 230 to e.g. 100
 - [x] Optimize the NN archi, bands number...
@@ -42,3 +42,7 @@
 - [x] Check the code, data_loader, shuffling, data format...
 - [x] Code refactoring
 - [x] Add bands padding function and do testing
+- [ ] There is a bug in padding_around_fermi function, will fix it
+- [ ] Find out why no improvement on new added data
+- [ ] Stat sg occurrence and count how many data need generate
+- [x] Added prediction result Vs epoch and confusion matrix
