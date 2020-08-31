@@ -1,1 +1,1 @@
-# Original model placed [here](https://github.com/koktszfung/BStoSG) for convinence
+# Original model placed [here](https://github.com/koktszfung/BandStructureToSpaceGroup) for convinence
